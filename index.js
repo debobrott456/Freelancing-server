@@ -39,7 +39,8 @@ app.post('/allJobs',async(req,res)=>{
 app.post('/addJobs', async(req,res)=>{
    const jobs = {
     ...req.body,
-    created_At: new Date(req.body.created_At) // convert to Date object
+    created_At: new Date(req.body.created_At) 
+    // added api
   };
   const result=await myColl.insertOne(jobs)
   res.send(result)
