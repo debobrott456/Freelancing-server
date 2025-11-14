@@ -1,4 +1,5 @@
 const express=require('express');
+require('dotenv').config();
 const cors =require('cors');
 
 const app=express()
@@ -39,7 +40,10 @@ app.post('/allJobs',async(req,res)=>{
     res.send(result)
 })
 app.post('/addJobs', async(req,res)=>{
-  const jobs=req.body;
+   const jobs = {
+    ...req.body,
+    created_At: new Date(req.body.created_At) // convert to Date object
+  };
   const result=await myColl.insertOne(jobs)
   res.send(result)
 })
@@ -57,7 +61,7 @@ app.get('/allJobs/:id',async(req,res)=>{
   res.send(result)
 })
 
-app.get('/allJobs', async (req, res) => {
+app.get('/allJobsmy', async (req, res) => {
   try {
     console.log("req.query:", req.query);
 
@@ -77,16 +81,17 @@ app.get('/allJobs', async (req, res) => {
   }
 });
 
+app.get('/allJobs', async(req, res) => {
+  const sortOrder = req.query.sort === 'asc' ? 1 : -1;
 
-app.get('/allJobs',async(req,res)=>{
-    const cursor=myColl.find().sort({created_At:1})
-    const result=await cursor.toArray()
+    const cursor = myColl.find().sort({ created_At: sortOrder });
+    const result=await cursor.toArray();
     res.send(result)
 })
 
 app.get('/recentJobs',async(req,res)=>{
-    const cursor=myColl.find().sort({created_At:-1}).limit(6)
-    const result=await cursor.toArray()
+    const cursor= myColl.find().sort({created_At:-1}).limit(6);
+    const result=await cursor.toArray();
     res.send(result)
   }
 )
