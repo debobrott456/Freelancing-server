@@ -5,7 +5,13 @@ const cors =require('cors');
 const app=express()
 const port=process.env.PORT||5000
 app.use(express.json())
-app.use(cors())
+app.use(
+  cors({
+    origin:[ "https://monumental-empanada-6f058c.netlify.app",
+    ],
+    credentials: true,
+  })
+);
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = process.env.MONGO_URI;
@@ -20,7 +26,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
   
-    await client.connect();
+    // await client.connect();
    
 const myDB2 = client.db("myDB2");
 const myColl = myDB2.collection("collfreelancing");
@@ -115,9 +121,12 @@ app.patch('/allJobs/:id',async(req,res)=>{
   const result=await myColl.updateOne(query,update)
   res.send(result)
 })
+app.get('/',(req,res)=>{
+  res.send('server is running')
+})
 
-    await client.db("DBsmart").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("DBsmart").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   }
    finally {
    
