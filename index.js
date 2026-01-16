@@ -48,13 +48,32 @@ app.post('/messages',async(req,res)=>{
     const result = await myColl4.insertOne(jobs);
     res.send(result)
 })
-app.post('/orders',async(req,res)=>{
-    const jobs=req.body;
+// app.post('/orders',async(req,res)=>{
+//     const jobs=req.body;
    
 
-    const result = await myColl2.insertOne(jobs);
-    res.send(result)
-})
+//     const result = await myColl2.insertOne(jobs);
+//     res.send(result)
+// })
+app.post("/orders", async (req, res) => {
+  const order = req.body;
+
+  const existingOrder = await myColl2.findOne({
+    title:order.title,
+    orderEmail: order.orderEmail,
+    activeTab: order.activeTab,
+  });
+console.log(existingOrder)
+  if (existingOrder) {
+    return res.status(409).send({
+      message: "Order already exists",
+    });
+  }
+
+  const result = await myColl2.insertOne(order);
+  res.send(result);
+});
+
 app.post('/reviews',async(req,res)=>{
     const jobs=req.body;
    
@@ -150,7 +169,8 @@ app.get('/recentJobs',async(req,res)=>{
 app.delete('/allJobs/:id',async (req,res)=>{
   const id=req.params.id
   const query={_id: new ObjectId(id)}
-  const result=await myColl.deleteOne(query)
+  const result=await myColl2.deleteOne(query)
+  console.log(result)
   res.send(result)
 })
 
